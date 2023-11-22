@@ -38,6 +38,21 @@ from sklearn.metrics import precision_score, recall_score, f1_score
    return frames  
 
 
+def detect_temporal_segments(predictions, threshold=0.5):
+    temporal_segments = []
+    current_segment_start = None
+    for frame_index, frame_prediction in enumerate(predictions):
+        if np.max(frame_prediction) > threshold:
+            if current_segment_start is None:
+                current_segment_start = frame_index
+        elif current_segment_start is not None:
+            temporal_segments.append((current_segment_start, frame_index - 1))
+            current_segment_start = None
+    if current_segment_start is not None:
+        temporal_segments.append((current_segment_start, len(predictions) - 1))
+return temporal_segments
+
+
 
 train_data ='C:/Users/User/Downloads/train_data.zip';
 test_data ='C:/Users/User/Downloads/test_data.zip'
@@ -136,7 +151,7 @@ xt,yt=prepare_seq_frame(x_test,y_test)
 
 prediction=lstm_model.predict(xt)
 pred_label = np.argmax(pred_label, axis=1)
-
+temporal_segments = detect_temporal_segments(predictions, threshold=0.5)
 
 precision = precision_score(y_test, predicted_label, average='weighted')
 recall = recall_score(y_test, predicted_label, average='weighted')
