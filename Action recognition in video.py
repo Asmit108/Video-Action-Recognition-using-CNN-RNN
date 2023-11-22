@@ -1,14 +1,10 @@
-import numpy as np
 from matplotlib import pyplot as plt
-import scipy
-import pandas as pd
 import tensorflow as tf
 from tensorflow import keras     
 from keras.optimizers import Adam
-from sklearn.metrics import classification_report
-import cv2           
-from sklearn.metrics import precision_score, recall_score, f1_score
-
+import cv2       
+import numpy as np
+from sklearn.metrics import precision_score, recall_score
 
  def convert_video_to_frames(video_path): 
 
