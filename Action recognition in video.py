@@ -1,3 +1,12 @@
+import numpy as np
+import os
+import cv2
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.layers import SimpleRNN, Input, Dense
+from sklearn.metrics import precision_score, recall_score, accuracy_score
+
+
 def convert_video_to_frames(video_path, m): 
     # video capture object initialised using Path to video file video_path
     vid = cv2.VideoCapture(video_path) 
@@ -114,11 +123,11 @@ cnn_model = keras.Sequential(
 cnn_model_feature_extractor = keras.Model(inputs=cnn_model.input, outputs=cnn_model.layers[-3].output)
 
 img_class = 51
-lstm_model = keras.Sequential([
-    Input(shape=(MAX_SEQ_LENGTH, NUM_FEATURES)),  # Input shape for the LSTM layer
-    LSTM(32, activation='relu', return_sequences=True),
-    LSTM(64, activation='relu', return_sequences=True),
-    LSTM(128, activation='relu'),
+rnn_model = keras.Sequential([
+    Input(shape=(MAX_SEQ_LENGTH, NUM_FEATURES)),  # Input shape for the RNN layer
+    SimpleRNN(32, activation='relu', return_sequences=True),
+    SimpleRNN(64, activation='relu', return_sequences=True),
+    SimpleRNN(128, activation='relu'),
     Dense(img_class, activation='softmax')
 ])
 
@@ -135,9 +144,9 @@ def fit_the_model():
 
     xx,yy = prepare_seq_frames(features, y_train)
         
-    lstm_model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
-    lstm_model.fit(xx, yy, epochs=10, batch_size=32, validation_split=0.2)
-    lstm_model.save('LSTM_model_SAT_6.h5')
+    rnn_model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+    rnn_model.fit(xx, yy, epochs=10, batch_size=32, validation_split=0.2)
+    rnn_model.save('LSTM_model_SAT_6.h5')
    
 
 def main():
